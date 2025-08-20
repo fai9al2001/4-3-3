@@ -22,6 +22,25 @@ const logos = [
   { name: 'إسبانيا', code: 'es', type: 'flag' },
 ];
 
+const countries = {
+  'England': {
+    leagues: {
+      'Premier League': [
+        { name: 'Manchester United', src: 'https://football-logos.cc/england/manchester-united.png' },
+        { name: 'Liverpool', src: 'https://football-logos.cc/england/liverpool.png' },
+      ],
+    },
+  },
+  'Spain': {
+    leagues: {
+      'La Liga': [
+        { name: 'Real Madrid', src: 'https://football-logos.cc/spain/real-madrid.png' },
+        { name: 'Barcelona', src: 'https://football-logos.cc/spain/barcelona.png' },
+      ],
+    },
+  },
+};
+
 const formations = {
   '4-4-2': [ [1], [4], [4], [2] ],
   '4-4-1-1': [ [1], [4], [4], [1], [1] ],
@@ -49,25 +68,28 @@ const formations = {
 
 const pitch = document.getElementById('pitch');
 const formationSelect = document.getElementById('formation-select');
+const countrySelect = document.getElementById('country-select');
+const leagueSelect = document.getElementById('league-select');
+const clubSelect = document.getElementById('club-select');
 const logosDiv = document.getElementById('logos');
 let selectedLogo = null;
 
-function renderLogos() {
+function populateDropdown(select, options) {
+  select.innerHTML = '<option value="">اختر</option>';
+  options.forEach(option => {
+    const opt = document.createElement('option');
+    opt.value = option;
+    opt.textContent = option;
+    select.appendChild(opt);
+  });
+}
+
+function renderLogos(logos) {
   logosDiv.innerHTML = '';
-  logos.forEach((logo, idx) => {
+  logos.forEach(logo => {
     const div = document.createElement('div');
     div.className = 'logo-item';
-    div.title = logo.name;
-    if (logo.type === 'logo') {
-      div.innerHTML = `<img src="${logo.src}" alt="${logo.name}" />`;
-    } else if (logo.type === 'flag') {
-      div.innerHTML = `<span class="fi fi-${logo.code}" style="font-size:32px;"></span>`;
-    }
-    div.onclick = () => {
-      document.querySelectorAll('.logo-item').forEach(e => e.classList.remove('selected'));
-      div.classList.add('selected');
-      selectedLogo = logo;
-    };
+    div.innerHTML = `<img src="${logo.src}" alt="${logo.name}" title="${logo.name}" />`;
     logosDiv.appendChild(div);
   });
 }
@@ -102,11 +124,40 @@ function renderPitch(formation) {
   });
 }
 
+countrySelect.addEventListener('change', () => {
+  const country = countrySelect.value;
+  if (country && countries[country]) {
+    populateDropdown(leagueSelect, Object.keys(countries[country].leagues));
+    clubSelect.innerHTML = '<option value="">اختر النادي</option>';
+    logosDiv.innerHTML = '';
+  }
+});
+
+leagueSelect.addEventListener('change', () => {
+  const country = countrySelect.value;
+  const league = leagueSelect.value;
+  if (country && league && countries[country].leagues[league]) {
+    populateDropdown(clubSelect, countries[country].leagues[league].map(club => club.name));
+    renderLogos(countries[country].leagues[league]);
+  }
+});
+
+clubSelect.addEventListener('change', () => {
+  const country = countrySelect.value;
+  const league = leagueSelect.value;
+  const club = clubSelect.value;
+  if (country && league && club) {
+    const selectedClub = countries[country].leagues[league].find(c => c.name === club);
+    renderLogos(selectedClub ? [selectedClub] : []);
+  }
+});
+
 formationSelect.onchange = (e) => {
   renderPitch(e.target.value);
 };
 
 window.onload = () => {
+  populateDropdown(countrySelect, Object.keys(countries));
   renderLogos();
   renderPitch(formationSelect.value);
 };
