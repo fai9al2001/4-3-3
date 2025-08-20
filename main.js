@@ -5,11 +5,21 @@ const logos = [
   { name: 'برشلونة', src: 'https://football-logos.cc/spain/barcelona.png', type: 'logo' },
   { name: 'الهلال', src: 'https://football-logos.cc/saudi-arabia/al-hilal.png', type: 'logo' },
   { name: 'النصر', src: 'https://football-logos.cc/saudi-arabia/al-nassr.png', type: 'logo' },
+  { name: 'مانشستر يونايتد', src: 'https://football-logos.cc/england/manchester-united.png', type: 'logo' },
+  { name: 'ليفربول', src: 'https://football-logos.cc/england/liverpool.png', type: 'logo' },
+  { name: 'بايرن ميونيخ', src: 'https://football-logos.cc/germany/bayern-munchen.png', type: 'logo' },
+  { name: 'يوفنتوس', src: 'https://football-logos.cc/italy/juventus.png', type: 'logo' },
+  { name: 'باريس سان جيرمان', src: 'https://football-logos.cc/france/paris-saint-germain.png', type: 'logo' },
+
   // أعلام منتخبات
   { name: 'السعودية', code: 'sa', type: 'flag' },
   { name: 'البرازيل', code: 'br', type: 'flag' },
   { name: 'الأرجنتين', code: 'ar', type: 'flag' },
   { name: 'فرنسا', code: 'fr', type: 'flag' },
+  { name: 'إنجلترا', code: 'gb', type: 'flag' },
+  { name: 'ألمانيا', code: 'de', type: 'flag' },
+  { name: 'إيطاليا', code: 'it', type: 'flag' },
+  { name: 'إسبانيا', code: 'es', type: 'flag' },
 ];
 
 const formations = {
