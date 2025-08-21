@@ -4,6 +4,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const leagueSelect = document.getElementById('league-select');
   const logosGrid = document.getElementById('logos-grid');
   const pitch = document.getElementById('pitch');
+  const clearBtn = document.getElementById('clear-formation');
+  const exportBtn = document.getElementById('export-image');
 
   let selectedLogoSrc = null;
   let selectedFlagClass = null;
@@ -95,6 +97,8 @@ clubFilenameOverrides['Spain - LaLiga'] = {
     formationSelect.addEventListener('change', () => renderPitch(formationSelect.value));
     countrySelect.addEventListener('change', handleCountryChange);
     leagueSelect.addEventListener('change', handleLeagueChange);
+  if (clearBtn) clearBtn.addEventListener('click', clearFormationSlots);
+  if (exportBtn) exportBtn.addEventListener('click', exportPitchImage);
   }
 
   // --- Populating Selects ---
@@ -419,10 +423,10 @@ function clubFilenameCandidates(clubName) {
         
         slot.addEventListener('click', () => {
           if (selectedLogoSrc) {
-            slot.classList.remove('flag-slot');
+            slot.classList.add('filled-slot');
             slot.innerHTML = `<img src="${selectedLogoSrc}" alt="Selected Logo">`;
           } else if (selectedFlagClass) {
-            slot.classList.add('flag-slot');
+            slot.classList.add('filled-slot');
             slot.innerHTML = `<span class="${selectedFlagClass}" style="font-size:44px;line-height:1"></span>`;
           }
         });
@@ -430,6 +434,31 @@ function clubFilenameCandidates(clubName) {
         pitch.appendChild(slot);
       }
     });
+  }
+
+  // --- Clear Formation (empties all placed images/flags) ---
+  function clearFormationSlots() {
+    pitch.querySelectorAll('.player-slot').forEach(slot => {
+      slot.innerHTML = '';
+      slot.classList.remove('filled-slot');
+    });
+  }
+
+  // --- Export Pitch to Image using html2canvas ---
+  function exportPitchImage() {
+    if (typeof html2canvas === 'undefined') {
+      alert('html2canvas غير محمّل');
+      return;
+    }
+    // Temporarily add a white-ish background for better contrast in export
+    const prevBoxShadow = pitch.style.boxShadow;
+    html2canvas(pitch, { backgroundColor: null, scale: 2 }).then(canvas => {
+      const link = document.createElement('a');
+      link.download = `formation-${formationSelect.value}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      pitch.style.boxShadow = prevBoxShadow;
+    }).catch(err => console.error('Export failed', err));
   }
 
   initialize();

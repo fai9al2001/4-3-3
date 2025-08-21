@@ -117,12 +117,13 @@ body {
   transition: background-color 0.3s, transform 0.2s;
 }
 
-/* When a flag is placed, remove decorative background & border */
-.player-slot.flag-slot {
+/* بعد ملء الخانة (علم أو شعار) نخفي الخلفية والحد */
+.player-slot.filled-slot {
   background: none !important;
   border: none !important;
-  box-shadow: none;
+  box-shadow: none !important;
 }
+
 
 .player-slot:hover {
   background-color: rgba(255, 255, 255, 0.2);
