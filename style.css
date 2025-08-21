@@ -150,6 +150,10 @@ body {
   margin-top: 0;
 }
 
+.search-box { margin:0 0 0.75rem; }
+.search-box input { width:100%; padding:0.55rem 0.75rem; border:1px solid #345; border-radius:6px; background:#0c1b2d; color:var(--text-color); font-family:inherit; }
+.search-box input:focus { outline:2px solid var(--accent-color); }
+
 /* Accordion */
 #logos-accordion { display: flex; flex-direction: column; gap: 0.75rem; }
 .league-section { border: 1px solid var(--accent-color); border-radius: var(--border-radius); overflow: hidden; background: var(--primary-color); }

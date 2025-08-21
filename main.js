@@ -6,6 +6,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const pitch = document.getElementById('pitch');
   const clearBtn = document.getElementById('clear-formation');
   const exportBtn = document.getElementById('export-image');
+  const clubSearchInput = document.getElementById('club-search');
+  const flagSearchInput = document.getElementById('flag-search');
 
   let selectedLogoSrc = null;
   let selectedFlagClass = null;
@@ -96,9 +98,11 @@ clubFilenameOverrides['Spain - LaLiga'] = {
 
     formationSelect.addEventListener('change', () => renderPitch(formationSelect.value));
     countrySelect.addEventListener('change', handleCountryChange);
-    leagueSelect.addEventListener('change', handleLeagueChange);
+  leagueSelect.addEventListener('change', handleLeagueChange);
   if (clearBtn) clearBtn.addEventListener('click', clearFormationSlots);
   if (exportBtn) exportBtn.addEventListener('click', exportPitchImage);
+  if (clubSearchInput) clubSearchInput.addEventListener('input', handleClubSearch);
+  if (flagSearchInput) flagSearchInput.addEventListener('input', handleFlagSearch);
   }
 
   // --- Populating Selects ---
@@ -165,10 +169,13 @@ clubFilenameOverrides['Spain - LaLiga'] = {
   function buildFlagsPanel() {
     if (!flagsGrid) return;
     flagsGrid.innerHTML = '';
+    const filter = flagSearchInput ? flagSearchInput.value.trim().toLowerCase() : '';
     ISO_COUNTRY_CODES.forEach(code => {
+      const label = isoDisplayName(code);
+      if (filter && !label.toLowerCase().includes(filter) && !code.includes(filter)) return;
       const item = document.createElement('div');
       item.className = 'flag-item';
-      item.innerHTML = `<span class="fi fi-${code}"></span><small>${isoDisplayName(code)}</small>`;
+      item.innerHTML = `<span class="fi fi-${code}"></span><small>${label}</small>`;
       item.addEventListener('click', () => {
         document.querySelectorAll('.flag-item.selected').forEach(el=>el.classList.remove('selected'));
         item.classList.add('selected');
@@ -368,7 +375,7 @@ function clubFilenameCandidates(clubName) {
   function filterLogos() {
     const countryId = countrySelect.value;
     const leagueId = leagueSelect.value;
-    // Rebuild limited set
+    const term = clubSearchInput ? clubSearchInput.value.trim().toLowerCase() : '';
     logosAccordion.innerHTML = '';
     for (const cId in database) {
       if (countryId && cId !== countryId) continue;
@@ -380,6 +387,7 @@ function clubFilenameCandidates(clubName) {
         const section = ensureLeagueSection(folder, leagueDisplay);
         const grid = section.querySelector('.league-grid');
         database[cId].leagues[lId].clubs.forEach(clubName => {
+          if (term && !clubName.toLowerCase().includes(term)) return;
           grid.appendChild(createLogoItem(clubName, cId, lId));
         });
       }
@@ -450,16 +458,20 @@ function clubFilenameCandidates(clubName) {
       alert('html2canvas غير محمّل');
       return;
     }
-    // Temporarily add a white-ish background for better contrast in export
-    const prevBoxShadow = pitch.style.boxShadow;
-    html2canvas(pitch, { backgroundColor: null, scale: 2 }).then(canvas => {
+    // Remove selection state temporarily
+    const selectedEls = [...document.querySelectorAll('.logo-item.selected')];
+    selectedEls.forEach(el => el.classList.remove('selected'));
+    html2canvas(pitch, { backgroundColor: null, scale: 3, useCORS: true }).then(canvas => {
       const link = document.createElement('a');
       link.download = `formation-${formationSelect.value}.png`;
       link.href = canvas.toDataURL('image/png');
       link.click();
-      pitch.style.boxShadow = prevBoxShadow;
+      selectedEls.forEach(el => el.classList.add('selected'));
     }).catch(err => console.error('Export failed', err));
   }
+
+  function handleClubSearch(){ filterLogos(); }
+  function handleFlagSearch(){ buildFlagsPanel(); }
 
   initialize();
   buildFlagsPanel();
