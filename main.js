@@ -420,10 +420,23 @@ function clubFilenameCandidates(clubName) {
         const section = ensureLeagueSection(folder, leagueDisplay);
         const grid = section.querySelector('.league-grid');
         const clubs = database[cId].leagues[lId].clubs.slice().sort();
+        let added = 0;
         clubs.forEach(clubName => {
           if (term && !clubName.toLowerCase().includes(term)) return;
-            grid.appendChild(createLogoItem(clubName, cId, lId));
+          grid.appendChild(createLogoItem(clubName, cId, lId));
+          added++;
         });
+        // If searching: remove empty sections, open sections with matches
+        const body = section.querySelector('.league-body');
+        const toggle = section.querySelector('.league-toggle span:last-child');
+        if (term) {
+          if (added === 0) {
+            section.remove();
+          } else {
+            body.classList.add('open');
+            if (toggle) toggle.textContent = '−';
+          }
+        }
       }
     }
   }
