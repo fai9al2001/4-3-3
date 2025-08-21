@@ -1,107 +1,171 @@
+:root {
+  --primary-color: #0a192f;
+  --secondary-color: #172a45;
+  --accent-color: #64ffda;
+  --text-color: #ccd6f6;
+  --pitch-color: #2a9d8f;
+  --pitch-line-color: #ffffff;
+  --border-radius: 8px;
+  --font-family: 'Cairo', sans-serif;
+}
+
 body {
   margin: 0;
-  font-family: 'Cairo', sans-serif;
-  background: linear-gradient(to bottom, #1e3c72, #2a5298);
-  color: #fff;
+  font-family: var(--font-family);
+  background-color: var(--primary-color);
+  color: var(--text-color);
+  line-height: 1.6;
 }
 
-.stadium-bg {
-  min-height: 100vh;
-  background: url('https://example.com/football-field.jpg') no-repeat center center/cover;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.container {
-  background: rgba(0, 0, 0, 0.8);
-  padding: 40px;
-  border-radius: 16px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-  width: 90vw;
-  max-width: 800px;
-}
-
-h1, h2 {
+.main-header {
+  background-color: var(--secondary-color);
+  padding: 2rem;
   text-align: center;
+  border-bottom: 2px solid var(--accent-color);
+}
+
+.main-header h1 {
+  margin: 0;
+  font-size: 2.5rem;
+  color: var(--accent-color);
+}
+
+.main-content {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 2rem;
+  padding: 2rem;
+  align-items: start;
+}
+
+.controls-panel {
+  background-color: var(--secondary-color);
+  padding: 1.5rem;
+  border-radius: var(--border-radius);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.control-group label {
+  display: block;
+  margin-bottom: 0.5rem;
   font-weight: bold;
-  text-transform: uppercase;
-  letter-spacing: 2px;
+}
+
+.control-group select {
+  width: 100%;
+  padding: 0.8rem;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--accent-color);
+  background-color: var(--primary-color);
+  color: var(--text-color);
+  font-family: var(--font-family);
+}
+
+.pitch-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 #pitch {
-  margin: 32px auto;
-  background: #4caf50;
-  border-radius: 16px;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5) inset;
+  width: 500px;
+  height: 700px;
+  background-color: var(--pitch-color);
+  border: 3px solid var(--pitch-line-color);
+  border-radius: var(--border-radius);
   position: relative;
-  width: 400px;
-  height: 600px;
-  border: 6px solid #fff;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
 .player-slot {
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.3);
-  border: 3px dashed #fff;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 2px dashed var(--pitch-line-color);
   position: absolute;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: background 0.3s, transform 0.2s;
-}
-
-.player-slot img, .player-slot span {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
+  transition: background-color 0.3s, transform 0.2s;
 }
 
 .player-slot:hover {
+  background-color: rgba(255, 255, 255, 0.2);
   transform: scale(1.1);
 }
 
-.player-slot.selected {
-  background: #fff;
+.player-slot img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
-.logos-list {
-  margin-top: 32px;
+.logos-panel {
+  grid-column: 1 / -1;
+  background-color: var(--secondary-color);
+  padding: 1.5rem;
+  border-radius: var(--border-radius);
+  margin-top: 2rem;
 }
 
-#logos {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  justify-content: center;
+.logos-panel h2 {
+  text-align: center;
+  color: var(--accent-color);
+  margin-top: 0;
+}
+
+#logos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 1rem;
+  max-height: 400px;
+  overflow-y: auto;
+  padding: 1rem;
 }
 
 .logo-item {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background: #fff;
+  background-color: var(--primary-color);
+  border-radius: var(--border-radius);
+  padding: 0.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  border: 3px solid #4caf50;
-  transition: border 0.3s, transform 0.2s;
-}
-
-.logo-item img, .logo-item span {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
+  border: 2px solid transparent;
+  transition: border-color 0.3s, transform 0.2s;
 }
 
 .logo-item:hover {
-  transform: scale(1.1);
+  transform: scale(1.05);
 }
 
 .logo-item.selected {
-  border: 3px solid #ffeb3b;
+  border-color: var(--accent-color);
+}
+
+.logo-item img {
+  max-width: 100%;
+  height: auto;
+}
+
+.main-footer {
+  text-align: center;
+  padding: 1.5rem;
+  margin-top: 2rem;
+  background-color: var(--secondary-color);
+  font-size: 0.9rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+  .main-content {
+    grid-template-columns: 1fr;
+  }
+  .pitch-container {
+    order: -1; /* Move pitch to the top on smaller screens */
+  }
 }

@@ -1,163 +1,166 @@
-// قائمة شعارات أندية وأعلام منتخبات (روابط مباشرة + أعلام)
-const logos = [
-  // شعارات أندية
-  { name: 'ريال مدريد', src: 'https://football-logos.cc/spain/real-madrid.png', type: 'logo' },
-  { name: 'برشلونة', src: 'https://football-logos.cc/spain/barcelona.png', type: 'logo' },
-  { name: 'الهلال', src: 'https://football-logos.cc/saudi-arabia/al-hilal.png', type: 'logo' },
-  { name: 'النصر', src: 'https://football-logos.cc/saudi-arabia/al-nassr.png', type: 'logo' },
-  { name: 'مانشستر يونايتد', src: 'https://football-logos.cc/england/manchester-united.png', type: 'logo' },
-  { name: 'ليفربول', src: 'https://football-logos.cc/england/liverpool.png', type: 'logo' },
-  { name: 'بايرن ميونيخ', src: 'https://football-logos.cc/germany/bayern-munchen.png', type: 'logo' },
-  { name: 'يوفنتوس', src: 'https://football-logos.cc/italy/juventus.png', type: 'logo' },
-  { name: 'باريس سان جيرمان', src: 'https://football-logos.cc/france/paris-saint-germain.png', type: 'logo' },
+document.addEventListener('DOMContentLoaded', () => {
+  const formationSelect = document.getElementById('formation-select');
+  const countrySelect = document.getElementById('country-select');
+  const leagueSelect = document.getElementById('league-select');
+  const logosGrid = document.getElementById('logos-grid');
+  const pitch = document.getElementById('pitch');
 
-  // أعلام منتخبات
-  { name: 'السعودية', code: 'sa', type: 'flag' },
-  { name: 'البرازيل', code: 'br', type: 'flag' },
-  { name: 'الأرجنتين', code: 'ar', type: 'flag' },
-  { name: 'فرنسا', code: 'fr', type: 'flag' },
-  { name: 'إنجلترا', code: 'gb', type: 'flag' },
-  { name: 'ألمانيا', code: 'de', type: 'flag' },
-  { name: 'إيطاليا', code: 'it', type: 'flag' },
-  { name: 'إسبانيا', code: 'es', type: 'flag' },
-];
+  let selectedLogoSrc = null;
 
-const countries = {
-  'England': {
-    leagues: {
-      'Premier League': [
-        { name: 'Manchester United', src: 'https://football-logos.cc/england/manchester-united.png' },
-        { name: 'Liverpool', src: 'https://football-logos.cc/england/liverpool.png' },
-      ],
-    },
-  },
-  'Spain': {
-    leagues: {
-      'La Liga': [
-        { name: 'Real Madrid', src: 'https://football-logos.cc/spain/real-madrid.png' },
-        { name: 'Barcelona', src: 'https://football-logos.cc/spain/barcelona.png' },
-      ],
-    },
-  },
-};
+  // --- Initialization ---
 
-const formations = {
-  '4-4-2': [ [1], [4], [4], [2] ],
-  '4-4-1-1': [ [1], [4], [4], [1], [1] ],
-  '4-1-2-1-2': [ [1], [4], [1], [2], [1], [2] ], // Diamond
-  '4-1-3-2': [ [1], [4], [1], [3], [2] ],
-  '4-2-3-1': [ [1], [4], [2], [3], [1] ],
-  '4-2-2-2': [ [1], [4], [2], [2], [2] ],
-  '4-2-4': [ [1], [4], [2], [4] ],
-  '4-3-3': [ [1], [4], [3], [3] ],
-  '4-1-4-1': [ [1], [4], [1], [4], [1] ],
-  '4-3-2-1': [ [1], [4], [3], [2], [1] ],
-  '4-5-1': [ [1], [4], [5], [1] ],
-  '4-6-0': [ [1], [4], [6] ],
-  '3-4-3': [ [1], [3], [4], [3] ],
-  '3-4-2-1': [ [1], [3], [4], [2], [1] ],
-  '3-4-1-2': [ [1], [3], [4], [1], [2] ],
-  '3-2-4-1': [ [1], [3], [2], [4], [1] ],
-  '3-1-3-3': [ [1], [3], [1], [3], [3] ],
-  '5-2-2-1': [ [1], [5], [2], [2], [1] ],
-  '5-4-1': [ [1], [5], [4], [1] ],
-  '3-5-2': [ [1], [3], [5], [2] ],
-  '3-5-1-1': [ [1], [3], [5], [1], [1] ],
-  '5-3-2': [ [1], [5], [3], [2] ],
-};
+  function initialize() {
+    populateFormations();
+    populateCountries();
+    renderPitch(formationSelect.value);
+    loadAllLogos();
 
-const pitch = document.getElementById('pitch');
-const formationSelect = document.getElementById('formation-select');
-const countrySelect = document.getElementById('country-select');
-const leagueSelect = document.getElementById('league-select');
-const clubSelect = document.getElementById('club-select');
-const logosDiv = document.getElementById('logos');
-let selectedLogo = null;
+    formationSelect.addEventListener('change', () => renderPitch(formationSelect.value));
+    countrySelect.addEventListener('change', handleCountryChange);
+    leagueSelect.addEventListener('change', handleLeagueChange);
+  }
 
-function populateDropdown(select, options) {
-  select.innerHTML = '<option value="">اختر</option>';
-  options.forEach(option => {
-    const opt = document.createElement('option');
-    opt.value = option;
-    opt.textContent = option;
-    select.appendChild(opt);
-  });
-}
+  // --- Populating Selects ---
 
-function renderLogos(logos) {
-  logosDiv.innerHTML = '';
-  logos.forEach(logo => {
-    const div = document.createElement('div');
-    div.className = 'logo-item';
-    div.innerHTML = `<img src="${logo.src}" alt="${logo.name}" title="${logo.name}" />`;
-    logosDiv.appendChild(div);
-  });
-}
+  function populateFormations() {
+    for (const formation in formations) {
+      const option = document.createElement('option');
+      option.value = formation;
+      option.textContent = formation;
+      formationSelect.appendChild(option);
+    }
+  }
 
-function renderPitch(formation) {
-  pitch.innerHTML = '';
-  const rows = formations[formation];
-  const pitchW = pitch.offsetWidth;
-  const pitchH = pitch.offsetHeight;
-  const rowHeight = pitchH / rows.length;
-  let slotIdx = 0;
-  rows.forEach((row, i) => {
-    const n = row[0];
-    for (let j = 0; j < n; j++) {
-      const slot = document.createElement('div');
-      slot.className = 'player-slot';
-      slot.style.top = `${i * rowHeight + rowHeight/2 - 28}px`;
-      slot.style.left = `${(pitchW/(n+1)) * (j+1) - 28}px`;
-      slot.dataset.idx = slotIdx;
-      slot.onclick = () => {
-        if (selectedLogo) {
-          if (selectedLogo.type === 'logo') {
-            slot.innerHTML = `<img src="${selectedLogo.src}" alt="${selectedLogo.name}" title="${selectedLogo.name}" />`;
-          } else if (selectedLogo.type === 'flag') {
-            slot.innerHTML = `<span class="fi fi-${selectedLogo.code}" style="font-size:40px;" title="${selectedLogo.name}"></span>`;
+  function populateCountries() {
+    for (const countryId in database) {
+      const option = document.createElement('option');
+      option.value = countryId;
+      option.textContent = database[countryId].name;
+      countrySelect.appendChild(option);
+    }
+  }
+
+  function populateLeagues(countryId) {
+    leagueSelect.innerHTML = '<option value="">-- كل الدوريات --</option>';
+    if (countryId && database[countryId]) {
+      for (const leagueId in database[countryId].leagues) {
+        const option = document.createElement('option');
+        option.value = leagueId;
+        option.textContent = database[countryId].leagues[leagueId].name;
+        leagueSelect.appendChild(option);
+      }
+      leagueSelect.disabled = false;
+    } else {
+      leagueSelect.disabled = true;
+    }
+  }
+
+  // --- Logo Rendering ---
+
+  function createLogoItem(clubName, countryId, leagueId) {
+    const logoItem = document.createElement('div');
+    logoItem.className = 'logo-item';
+    const logoImg = document.createElement('img');
+    const clubId = clubName.toLowerCase().replace(/ /g, '-');
+    const logoSrc = `https://raw.githubusercontent.com/luukhopman/football-logos/master/logos/${countryId}/${leagueId}/${clubId}.png`;
+    logoImg.src = logoSrc;
+    logoImg.alt = clubName;
+    logoImg.title = clubName;
+    logoImg.onerror = () => { logoItem.style.display = 'none'; }; // Hide if logo fails to load
+    logoItem.appendChild(logoImg);
+
+    logoItem.addEventListener('click', () => {
+      document.querySelectorAll('.logo-item.selected').forEach(el => el.classList.remove('selected'));
+      logoItem.classList.add('selected');
+      selectedLogoSrc = logoSrc;
+    });
+
+    return logoItem;
+  }
+
+  function renderLogos(logos) {
+    logosGrid.innerHTML = '';
+    logos.forEach(logo => logosGrid.appendChild(logo));
+  }
+
+  function loadAllLogos() {
+    const allLogoItems = [];
+    for (const countryId in database) {
+      for (const leagueId in database[countryId].leagues) {
+        database[countryId].leagues[leagueId].clubs.forEach(clubName => {
+          allLogoItems.push(createLogoItem(clubName, countryId, leagueId));
+        });
+      }
+    }
+    renderLogos(allLogoItems);
+  }
+
+  // --- Event Handlers ---
+
+  function handleCountryChange() {
+    const countryId = countrySelect.value;
+    populateLeagues(countryId);
+    filterLogos();
+  }
+
+  function handleLeagueChange() {
+    filterLogos();
+  }
+
+  function filterLogos() {
+    const countryId = countrySelect.value;
+    const leagueId = leagueSelect.value;
+    const filteredLogoItems = [];
+
+    if (!countryId) {
+      loadAllLogos();
+      return;
+    }
+
+    for (const cId in database) {
+      if (cId === countryId) {
+        for (const lId in database[cId].leagues) {
+          if (!leagueId || lId === leagueId) {
+            database[cId].leagues[lId].clubs.forEach(clubName => {
+              filteredLogoItems.push(createLogoItem(clubName, cId, lId));
+            });
           }
         }
-      };
-      pitch.appendChild(slot);
-      slotIdx++;
+      }
     }
-  });
-}
-
-countrySelect.addEventListener('change', () => {
-  const country = countrySelect.value;
-  if (country && countries[country]) {
-    populateDropdown(leagueSelect, Object.keys(countries[country].leagues));
-    clubSelect.innerHTML = '<option value="">اختر النادي</option>';
-    logosDiv.innerHTML = '';
+    renderLogos(filteredLogoItems);
   }
-});
 
-leagueSelect.addEventListener('change', () => {
-  const country = countrySelect.value;
-  const league = leagueSelect.value;
-  if (country && league && countries[country].leagues[league]) {
-    populateDropdown(clubSelect, countries[country].leagues[league].map(club => club.name));
-    renderLogos(countries[country].leagues[league]);
+  // --- Pitch Rendering ---
+
+  function renderPitch(formation) {
+    pitch.innerHTML = '';
+    const rows = formations[formation];
+    if (!rows) return;
+
+    const pitchW = pitch.offsetWidth;
+    const pitchH = pitch.offsetHeight;
+    const rowHeight = pitchH / rows.length;
+
+    rows.forEach((row, i) => {
+      const n = row[0];
+      for (let j = 0; j < n; j++) {
+        const slot = document.createElement('div');
+        slot.className = 'player-slot';
+        slot.style.top = `${i * rowHeight + rowHeight / 2 - 30}px`;
+        slot.style.left = `${(pitchW / (n + 1)) * (j + 1) - 30}px`;
+        
+        slot.addEventListener('click', () => {
+          if (selectedLogoSrc) {
+            slot.innerHTML = `<img src="${selectedLogoSrc}" alt="Selected Logo">`;
+            slot.style.borderStyle = 'solid';
+          }
+        });
+        
+        pitch.appendChild(slot);
+      }
+    });
   }
+
+  initialize();
 });
-
-clubSelect.addEventListener('change', () => {
-  const country = countrySelect.value;
-  const league = leagueSelect.value;
-  const club = clubSelect.value;
-  if (country && league && club) {
-    const selectedClub = countries[country].leagues[league].find(c => c.name === club);
-    renderLogos(selectedClub ? [selectedClub] : []);
-  }
-});
-
-formationSelect.onchange = (e) => {
-  renderPitch(e.target.value);
-};
-
-window.onload = () => {
-  populateDropdown(countrySelect, Object.keys(countries));
-  renderLogos();
-  renderPitch(formationSelect.value);
-};
