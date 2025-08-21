@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.3.2/css/flag-icons.min.css">
 </head>
 <body>
   <header class="main-header">
@@ -45,7 +46,7 @@
         </select>
       </div>
       <div class="control-group">
-        <label for="country-select">اختر الدولة:</label>
+        <label for="country-select">اختر الدولة: <span id="country-flag" class="fi" style="margin-inline-start:6px;"></span></label>
         <select id="country-select">
           <option value="">-- كل الدول --</option>
         </select>
@@ -66,9 +67,12 @@
 
     <div class="logos-panel">
       <h2>الشعارات المتاحة</h2>
-      <div id="logos-grid">
-        <!-- Logos will be populated by JS -->
-      </div>
+      <div id="logos-accordion"><!-- League accordions injected by JS --></div>
+    </div>
+
+    <div class="flags-panel">
+      <h2>أعلام الدول</h2>
+      <div id="flags-grid"><!-- Flags injected by JS --></div>
     </div>
   </main>
 
